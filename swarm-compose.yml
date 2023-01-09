@@ -1,0 +1,311 @@
+version: "3.3"
+
+networks:
+  mongo:
+    external: true
+
+volumes:
+    shard01_a_data:
+      external: true 
+    shard01_a_cfg:
+      external: true
+
+    shard01_b_data: 
+      external: true
+    shard01_b_cfg:
+      external: true
+
+    shard01_c_data:
+      external: true 
+    shard01_c_cfg:
+      external: true
+
+    shard02_a_data:
+      external: true 
+    shard02_a_cfg:
+      external: true
+
+    shard02_b_data:
+      external: true 
+    shard02_b_cfg:
+      external: true
+
+    shard02_c_data:
+      external: true 
+    shard02_c_cfg:
+      external: true 
+
+    shard03_a_data:
+      external: true 
+    shard03_a_cfg:
+      external: true
+
+    shard03_b_data:
+      external: true 
+    shard03_b_cfg:
+      external: true
+
+    shard03_c_data:
+      external: true 
+    shard03_c_cfg:
+      external: true 
+
+    configsvr01_data:
+      external: true   
+    configsvr01_cfg:
+      external: true
+
+    configsvr02_data:
+      external: true   
+    configsvr02_cfg:
+      external: true
+
+    configsvr03_data:
+      external: true   
+    configsvr03_cfg:
+      external: true
+
+    router01_data:
+      external: true 
+    router01_cfg:
+      external: true
+
+    router02_data:
+      external: true 
+    router02_cfg:
+      external: true
+services:
+
+  shard01_a:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - ./scripts:/scripts
+      - shard01_a_data:/data/db
+      - shard01_a_cfg:/data/configdb
+    ports:
+      - 27117:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-01
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data1
+
+  shard01_b:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - shard01_b_data:/data/db
+      - shard01_b_cfg:/data/configdb
+    ports:
+      - 27118:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-01
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data2
+  shard01_c:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - shard01_c_data:/data/db
+      - shard01_c_cfg:/data/configdb
+    ports:
+      - 27119:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-01
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data3
+
+  shard02_a:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - ./scripts:/scripts
+      - shard02_a_data:/data/db
+      - shard02_a_cfg:/data/configdb
+    ports:
+      - 27120:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-02
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data1
+
+  shard02_b:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - shard02_b_data:/data/db
+      - shard02_b_cfg:/data/configdb
+    ports:
+      - 27121:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-02
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data2
+  shard02_c:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - shard02_c_data:/data/db
+      - shard02_c_cfg:/data/configdb
+    ports:
+      - 27122:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-02
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data3
+
+  shard03_a:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - ./scripts:/scripts
+      - shard03_a_data:/data/db
+      - shard03_a_cfg:/data/configdb
+    ports:
+      - 27123:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-03
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data1
+  shard03_b:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - shard03_b_data:/data/db
+      - shard03_b_cfg:/data/configdb
+    ports:
+      - 27124:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-03
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data2
+  shard03_c:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - shard03_c_data:/data/db
+      - shard03_c_cfg:/data/configdb
+    ports:
+      - 27125:27017
+    command: mongod --shardsvr --port 27017 --replSet rs-shard-03
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.data == data3
+  cfg1:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - ./scripts:/scripts
+      - configsvr01_data:/data/db
+      - configsvr01_cfg:/data/configdb
+    ports:
+      - 27126:27017
+    command: mongod --configsvr --port 27017 --replSet  rs-config-server
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.cfg == cfg1
+  cfg2:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - configsvr02_data:/data/db      
+      - configsvr02_cfg:/data/configdb   
+    ports:
+      - 27127:27017
+    command: mongod --configsvr --port 27017 --replSet  rs-config-server              
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.cfg == cfg2
+  cfg3:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - configsvr03_data:/data/db
+      - configsvr03_cfg:/data/configdb
+    ports:
+      - 27128:27017
+    command: mongod --configsvr --port 27017 --replSet  rs-config-server
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.cfg == cfg3
+  mongos1:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - ./scripts:/scripts
+      - router01_data:/data/db
+      - router01_cfg:/data/configdb
+    command: mongos --port 27017 --configdb rs-config-server/cfg1:27017,cfg2:27017,cfg3:27017 --bind_ip_all
+    ports:
+      - 27129:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.mongos == mongos1
+  mongos2:
+    image: mongo:6.0.1
+    networks:
+      - mongo
+    volumes:
+      - router02_data:/data/db
+      - router02_cfg:/data/configdb
+    command: mongos --port 27017 --configdb rs-config-server/cfg1:27017,cfg2:27017,cfg3:27017 --bind_ip_all
+    ports:
+      - 27130:27017
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.mongo.role.mongos == mongos2
